@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model CoverLetter {
+  id               String           @id @default(cuid())
+  
+  // Job Information
+  positionTitle    String           @map("position_title")
+  companyName      String           @map("company_name")
+  jobDescription   String           @map("job_description")
+  
+  // Generated Content
+  generatedContent String?          @map("generated_content")
+  updatedContent   String?          @map("updated_content")
+  
+  // Status
+  generationStatus ProcessingStatus @default(COMPLETED) @map("generation_status")
+  
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+
+  @@map("cover_letters")
+}
+
+model GeneratedCv {
+  id               String           @id @default(cuid())
+  templateType     String           @map("template_type")
+  templateData     String           @map("template_data")
+  pdfData          Bytes?           @map("pdf_data")
+  generationStatus ProcessingStatus @default(PENDING) @map("generation_status")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+
+  @@map("generated_cvs")
+}
+
+enum ProcessingStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}

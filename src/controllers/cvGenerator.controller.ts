@@ -128,8 +128,35 @@ export class CVGeneratorController {
   downloadCV = async (req: Request, res: Response): Promise<void> => {
     try {
       const { cvId } = req.params;
+      const { templateType, data, version, language } = req.body;
 
-      const pdfBuffer = await this.cvGeneratorService.downloadCV(cvId);
+      // Validate input
+      if (!templateType || !data) {
+        res.status(400).json({
+          success: false,
+          message: 'Template type and data are required',
+        });
+        return;
+      }
+
+      // Handle version and language for all templates
+      if (version && ['global', 'turkey'].includes(version)) {
+        if (version === 'turkey' && (!language || !['turkish', 'english'].includes(language))) {
+          res.status(400).json({
+            success: false,
+            message: 'Language is required for turkey version (turkish or english)',
+          });
+          return;
+        }
+      }
+
+      const pdfBuffer = await this.cvGeneratorService.downloadCV(
+        cvId,
+        templateType as CVTemplateType,
+        data,
+        version,
+        language
+      );
 
       if (!pdfBuffer) {
         res.status(404).json({

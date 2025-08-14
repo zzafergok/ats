@@ -17,7 +17,7 @@ router.get('/', cvGeneratorController.getUserCVs);
 router.get('/:cvId', cvGeneratorController.getCV);
 
 // Download CV PDF
-router.get('/:cvId/download', cvGeneratorController.downloadCV);
+router.post('/:cvId/download', cvGeneratorController.downloadCV);
 
 // Regenerate CV
 router.post('/:cvId/regenerate', cvGeneratorController.regenerateCV);

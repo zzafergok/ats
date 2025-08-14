@@ -180,16 +180,22 @@ export class CVGeneratorService {
     };
   }
 
-  async downloadCV(cvId: string): Promise<Buffer | null> {
-    const cv = await prisma.generatedCv.findFirst({
-      where: { id: cvId },
-    });
+  async downloadCV(
+    cvId: string,
+    templateType: CVTemplateType,
+    data: CVTemplateData,
+    version?: string,
+    language?: string
+  ): Promise<Buffer | null> {
+    // Generate PDF on-demand with provided parameters
+    const pdfBuffer = await this.generatePDFByTemplate(
+      templateType,
+      data,
+      version,
+      language
+    );
 
-    if (!cv || !cv.pdfData) {
-      return null;
-    }
-
-    return Buffer.from(cv.pdfData);
+    return pdfBuffer;
   }
 
   async regenerateCV(cvId: string, data: CVTemplateData, version?: string, language?: string): Promise<CVGenerationResponse> {

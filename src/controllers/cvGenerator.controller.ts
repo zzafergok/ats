@@ -150,13 +150,26 @@ export class CVGeneratorController {
         }
       }
 
-      const pdfBuffer = await this.cvGeneratorService.downloadCV(
-        cvId,
-        templateType as CVTemplateType,
-        data,
-        version,
-        language
-      );
+      let pdfBuffer: Buffer | null;
+
+      // If cvId is provided, download existing CV; otherwise generate new one
+      if (cvId) {
+        pdfBuffer = await this.cvGeneratorService.downloadCV(
+          cvId,
+          templateType as CVTemplateType,
+          data,
+          version,
+          language
+        );
+      } else {
+        // Generate CV directly without saving to database
+        pdfBuffer = await this.cvGeneratorService.generateCVPDF(
+          templateType as CVTemplateType,
+          data,
+          version,
+          language
+        );
+      }
 
       if (!pdfBuffer) {
         res.status(404).json({
@@ -166,8 +179,9 @@ export class CVGeneratorController {
         return;
       }
 
+      const filename = cvId ? `cv-${cvId}.pdf` : 'cv-download.pdf';
       res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `attachment; filename="cv-${cvId}.pdf"`);
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
       res.send(pdfBuffer);
     } catch (error) {
       logger.error('Download CV error:', error);

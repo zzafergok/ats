@@ -16,7 +16,10 @@ router.get('/', cvGeneratorController.getUserCVs);
 // Get specific CV
 router.get('/:cvId', cvGeneratorController.getCV);
 
-// Download CV PDF
+// Download CV PDF (direct download without CV ID)
+router.post('/download', cvGeneratorController.downloadCV);
+
+// Download specific CV PDF
 router.post('/:cvId/download', cvGeneratorController.downloadCV);
 
 // Regenerate CV

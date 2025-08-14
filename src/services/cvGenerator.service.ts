@@ -250,6 +250,16 @@ export class CVGeneratorService {
     });
   }
 
+  // Generate CV PDF without saving to database (for direct download)
+  async generateCVPDF(
+    templateType: CVTemplateType,
+    data: CVTemplateData,
+    version?: string,
+    language?: string
+  ): Promise<Buffer> {
+    return this.generatePDFByTemplate(templateType, data, version, language);
+  }
+
   private async generatePDFByTemplate(
     templateType: CVTemplateType,
     data: CVTemplateData,
